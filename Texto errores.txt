@@ -1,7 +1,0 @@
-1- Crear una función void y no llamarla.
-2- Las piezas se comían entre ellas sin ser necesario. Para solucionarlo
-cree una bandera en la que la pieza agarrada determine el valor de esta
-así no se agarrarían piezas no deseadas.
-3- No declarar las variables.
-4- No poder cambiar las imagenes de una pieza en especifico. Para 
-solucionar esto, cree una variable de imagen para cada una de las piezas
