@@ -97,8 +97,7 @@ Ajedrez-Tematico-JavaScript/
 
 ## 👨‍💻 Créditos
 
-Desarrollado por Nacho  
-Mejorado con ayuda de **GitHub Copilot**
+Desarrollado por Nacho
 
 ---
 
