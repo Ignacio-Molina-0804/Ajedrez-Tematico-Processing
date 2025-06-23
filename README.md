@@ -83,7 +83,7 @@ Ajedrez-Tematico-JavaScript/
 
 - [Processing](https://processing.org/) instalado.
 - Librería [Minim](http://code.compartmental.net/tools/minim/) para sonido  
-  (instala desde el gestor de librerías de Processing).
+  (instala desde el gestor de librerías de Processing, necesaria al 100% debido que si no la tienes el programa no funcionara).
 
 ---
 
@@ -97,8 +97,7 @@ Ajedrez-Tematico-JavaScript/
 
 ## 👨‍💻 Créditos
 
-Desarrollado por Nacho  
-Mejorado con ayuda de **GitHub Copilot**
+Desarrollado por Nacho
 
 ---
 
