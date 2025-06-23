@@ -1,48 +1,37 @@
 void calcularCasillasValidas(int idx) {
   casillasValidas.clear();
+  Pieza p = piezas.get(idx);
   for (int f = 0; f < N; f++) {
     for (int c = 0; c < N; c++) {
       boolean propia = false;
-      for (int i = 0; i < PIEZAS; i++) {
-        if (i != idx && piezasEstado[i] != 2 && piezasFila[i] == f && piezasCol[i] == c && esBlanca[i] == esBlanca[idx]) {
+      for (int i = 0; i < piezas.size(); i++) {
+        Pieza otra = piezas.get(i);
+        if (i != idx && otra.estado != 2 && otra.fila == f && otra.col == c && otra.blanca == p.blanca) {
           propia = true;
           break;
         }
       }
       if (!propia && movimientoValido(idx, f, c)) {
-        int oldF = piezasFila[idx], oldC = piezasCol[idx];
-        int capturada = -1;
-        for (int j = 0; j < PIEZAS; j++) {
-          if (j != idx && piezasEstado[j] == 0 && piezasFila[j] == f && piezasCol[j] == c && esBlanca[j] != esBlanca[idx]) {
-            capturada = j;
-            piezasEstado[j] = 2;
-            break;
-          }
-        }
-        piezasFila[idx] = f; piezasCol[idx] = c;
-        boolean enJaque = reyEnJaque(esBlanca[idx]);
-        piezasFila[idx] = oldF; piezasCol[idx] = oldC;
-        if (capturada != -1) piezasEstado[capturada] = 0;
-        if (!enJaque) casillasValidas.add(new PVector(c, f));
+        casillasValidas.add(new PVector(c, f));
       }
     }
   }
 }
 
 boolean moverPieza(int idx, int filaDest, int colDest) {
-  // No mover fuera del tablero
+  Pieza p = piezas.get(idx);
   if (filaDest < 0 || filaDest >= N || colDest < 0 || colDest >= N) return false;
-  // No mover a la misma casilla
-  if (piezasFila[idx] == filaDest && piezasCol[idx] == colDest) return false;
-  // No mover a casilla propia
-  for (int i = 0; i < PIEZAS; i++) {
-    if (i != idx && piezasEstado[i] != 2 && piezasFila[i] == filaDest && piezasCol[i] == colDest && esBlanca[i] == esBlanca[idx]) {
+  if (p.fila == filaDest && p.col == colDest) return false;
+  for (int i = 0; i < piezas.size(); i++) {
+    Pieza otra = piezas.get(i);
+    if (i != idx && otra.estado != 2 && otra.fila == filaDest && otra.col == colDest && otra.blanca == p.blanca) {
       return false;
     }
   }
   int capturada = -1;
-  for (int i = 0; i < PIEZAS; i++) {
-    if (i != idx && piezasEstado[i] != 2 && piezasFila[i] == filaDest && piezasCol[i] == colDest && esBlanca[i] != esBlanca[idx]) {
+  for (int i = 0; i < piezas.size(); i++) {
+    Pieza otra = piezas.get(i);
+    if (i != idx && otra.estado != 2 && otra.fila == filaDest && otra.col == colDest && otra.blanca != p.blanca) {
       capturada = i;
       break;
     }
@@ -50,59 +39,54 @@ boolean moverPieza(int idx, int filaDest, int colDest) {
   if (!movimientoValido(idx, filaDest, colDest)) return false;
 
   // Enroque
-  if (tipoPieza[idx] == 4 && abs(colDest - piezasCol[idx]) == 2 && filaDest == piezasFila[idx]) {
-    int fila = piezasFila[idx];
+  if (p.tipo == 4 && abs(colDest - p.col) == 2 && filaDest == p.fila) {
+    int fila = p.fila;
     if (colDest == 6) {
-      for (int i = 0; i < PIEZAS; i++) {
-        if (tipoPieza[i] == 0 && piezasCol[i] == 7 && piezasFila[i] == fila && piezasEstado[i] == 0 && esBlanca[i] == esBlanca[idx]) {
-          piezasCol[i] = 5;
+      for (int i = 0; i < piezas.size(); i++) {
+        Pieza t = piezas.get(i);
+        if (t.tipo == 0 && t.fila == fila && t.col == 7 && t.estado != 2 && t.blanca == p.blanca) {
+          t.col = 5;
           break;
         }
       }
-      torreMovida[esBlanca[idx] ? 0 : 1][1] = true;
     }
     if (colDest == 2) {
-      for (int i = 0; i < PIEZAS; i++) {
-        if (tipoPieza[i] == 0 && piezasCol[i] == 0 && piezasFila[i] == fila && piezasEstado[i] == 0 && esBlanca[i] == esBlanca[idx]) {
-          piezasCol[i] = 3;
+      for (int i = 0; i < piezas.size(); i++) {
+        Pieza t = piezas.get(i);
+        if (t.tipo == 0 && t.fila == fila && t.col == 0 && t.estado != 2 && t.blanca == p.blanca) {
+          t.col = 3;
           break;
         }
       }
-      torreMovida[esBlanca[idx] ? 0 : 1][0] = true;
     }
-    reyMovido[esBlanca[idx] ? 0 : 1] = true;
+    reyMovido[p.blanca ? 0 : 1] = true;
   }
-  if (tipoPieza[idx] == 4) reyMovido[esBlanca[idx] ? 0 : 1] = true;
-  if (tipoPieza[idx] == 0) {
-    if (piezasCol[idx] == 0) torreMovida[esBlanca[idx] ? 0 : 1][0] = true;
-    if (piezasCol[idx] == 7) torreMovida[esBlanca[idx] ? 0 : 1][1] = true;
+  if (p.tipo == 4) reyMovido[p.blanca ? 0 : 1] = true;
+  if (p.tipo == 0) {
+    if (p.col == 0) torreMovida[p.blanca ? 0 : 1][0] = true;
+    if (p.col == 7) torreMovida[p.blanca ? 0 : 1][1] = true;
   }
 
   if (capturada != -1) {
-    piezasEstado[capturada] = 2;
-    piezasCol[capturada] = 420/50 + (capturada % 4);
-    piezasFila[capturada] = 0 + (capturada / 4);
-    if (esBlanca[idx]) {
-      piezasImg[capturada] = loadImage("monedaj.png");
+    Pieza cap = piezas.get(capturada);
+    cap.estado = 2;
+    cap.col = 420/50 + (capturada % 4);
+    cap.fila = 0 + (capturada / 4);
+    if (p.blanca) {
       contadorBlancas++;
     } else {
-      piezasImg[capturada] = loadImage("monedas.png");
       contadorNegras++;
     }
     sonido1.trigger();
   }
-  piezasFila[idx] = filaDest;
-  piezasCol[idx] = colDest;
+  p.fila = filaDest;
+  p.col = colDest;
 
   // Promoción de peón
-  if (tipoPieza[idx] == 8) {
-    if ((esBlanca[idx] && filaDest == 0) || (!esBlanca[idx] && filaDest == 7)) {
-      tipoPieza[idx] = 3;
-      if (esBlanca[idx]) {
-        piezasImg[idx] = loadImage("luke.png");
-      } else {
-        piezasImg[idx] = loadImage("emperador.png");
-      }
+  if (p.tipo == 8) {
+    if ((p.blanca && filaDest == 0) || (!p.blanca && filaDest == 7)) {
+      p.tipo = 4; // Promociona a reina (puedes cambiar el tipo si tienes otro valor para reina)
+      p.img = loadImage("emperador.png"); // Cambia la imagen por la de la reina
     }
   }
   return true;

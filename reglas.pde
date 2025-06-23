@@ -1,7 +1,8 @@
 boolean movimientoValido(int idx, int filaDest, int colDest) {
-  int f0 = piezasFila[idx], c0 = piezasCol[idx];
-  int tipo = tipoPieza[idx];
-  boolean blanca = esBlanca[idx];
+  Pieza p = piezas.get(idx);
+  int f0 = p.fila, c0 = p.col;
+  int tipo = p.tipo;
+  boolean blanca = p.blanca;
   int df = filaDest - f0, dc = colDest - c0;
   if (tipo == 8) {
     int dir = blanca ? -1 : 1;
@@ -41,15 +42,17 @@ boolean movimientoValido(int idx, int filaDest, int colDest) {
 }
 
 boolean hayPiezaEn(int fila, int col) {
-  for (int i = 0; i < PIEZAS; i++) {
-    if (piezasEstado[i] != 2 && piezasFila[i] == fila && piezasCol[i] == col) return true;
+  for (int i = 0; i < piezas.size(); i++) {
+    Pieza p = piezas.get(i);
+    if (p.estado != 2 && p.fila == fila && p.col == col) return true;
   }
   return false;
 }
 
 boolean hayPiezaRivalEn(int fila, int col, boolean blanca) {
-  for (int i = 0; i < PIEZAS; i++) {
-    if (piezasEstado[i] != 2 && piezasFila[i] == fila && piezasCol[i] == col && esBlanca[i] != blanca) return true;
+  for (int i = 0; i < piezas.size(); i++) {
+    Pieza p = piezas.get(i);
+    if (p.estado != 2 && p.fila == fila && p.col == col && p.blanca != blanca) return true;
   }
   return false;
 }
@@ -68,17 +71,19 @@ boolean caminoLibre(int f0, int c0, int f1, int c1) {
 
 boolean reyEnJaque(boolean blancas) {
   int reyIdx = -1;
-  for (int i = 0; i < PIEZAS; i++) {
-    if (tipoPieza[i] == 4 && esBlanca[i] == blancas && piezasEstado[i] == 0) {
+  for (int i = 0; i < piezas.size(); i++) {
+    Pieza p = piezas.get(i);
+    if (p.tipo == 4 && p.blanca == blancas && p.estado != 2) {
       reyIdx = i;
       break;
     }
   }
   if (reyIdx == -1) return false;
-  int rf = piezasFila[reyIdx], rc = piezasCol[reyIdx];
-  for (int i = 0; i < PIEZAS; i++) {
-    if (esBlanca[i] != blancas && piezasEstado[i] == 0) {
-      if (movimientoValido(i, rf, rc)) return true;
+  int rf = piezas.get(reyIdx).fila, rc = piezas.get(reyIdx).col;
+  for (int i = 0; i < piezas.size(); i++) {
+    Pieza p = piezas.get(i);
+    if (p.blanca != blancas && p.estado != 2 && movimientoValido(i, rf, rc)) {
+      return true;
     }
   }
   return false;
@@ -86,25 +91,20 @@ boolean reyEnJaque(boolean blancas) {
 
 boolean hayJaqueMate(boolean blancas) {
   if (!reyEnJaque(blancas)) return false;
-  for (int i = 0; i < PIEZAS; i++) {
-    if (esBlanca[i] == blancas && piezasEstado[i] == 0) {
-      int f0 = piezasFila[i], c0 = piezasCol[i];
-      for (int f = 0; f < N; f++) for (int c = 0; c < N; c++) {
-        if (movimientoValido(i, f, c)) {
-          int oldF = piezasFila[i], oldC = piezasCol[i];
-          int capturada = -1;
-          for (int j = 0; j < PIEZAS; j++) {
-            if (j != i && piezasEstado[j] == 0 && piezasFila[j] == f && piezasCol[j] == c && esBlanca[j] != blancas) {
-              capturada = j;
-              piezasEstado[j] = 2;
-              break;
-            }
+  for (int i = 0; i < piezas.size(); i++) {
+    Pieza p = piezas.get(i);
+    if (p.blanca == blancas && p.estado != 2) {
+      int f0 = p.fila, c0 = p.col;
+      for (int f = 0; f < N; f++) {
+        for (int c = 0; c < N; c++) {
+          if (movimientoValido(i, f, c)) {
+            int oldFila = p.fila, oldCol = p.col;
+            int oldEstado = p.estado;
+            p.fila = f; p.col = c;
+            boolean jaque = reyEnJaque(blancas);
+            p.fila = oldFila; p.col = oldCol; p.estado = oldEstado;
+            if (!jaque) return false;
           }
-          piezasFila[i] = f; piezasCol[i] = c;
-          boolean enJaque = reyEnJaque(blancas);
-          piezasFila[i] = oldF; piezasCol[i] = oldC;
-          if (capturada != -1) piezasEstado[capturada] = 0;
-          if (!enJaque) return false;
         }
       }
     }
