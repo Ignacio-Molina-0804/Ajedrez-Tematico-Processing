@@ -7,24 +7,6 @@ final int N = 8;
 final int PIEZAS = 32;
 
 ArrayList<Pieza> piezas = new ArrayList<Pieza>();
-String[] piezasNombres = {
-  // Negras mayores
-  "piloto.png", "boba.png", "guardia.png", "vader.png", "emperador.png", "guardia.png", "boba.png", "piloto.png",
-  // Peones negros
-  "storm.png", "storm.png", "storm.png", "storm.png", "storm.png", "storm.png", "storm.png", "storm.png",
-  // Blancas mayores
-  "yoda.png", "chew.png", "han.png", "kenobi.png", "luke.png", "han.png", "chew.png", "yoda.png",
-  // Peones blancos
-  "artu.png", "artu.png", "artu.png", "artu.png", "artu.png", "artu.png", "artu.png", "artu.png"
-};
-int[] tipoPiezaArr = {
-  0,1,2,3,4,2,1,0, 8,8,8,8,8,8,8,8,
-  0,1,2,3,4,2,1,0, 8,8,8,8,8,8,8,8
-};
-boolean[] esBlancaArr = {
-  false,false,false,false,false,false,false,false, false,false,false,false,false,false,false,false,
-  true,true,true,true,true,true,true,true, true,true,true,true,true,true,true,true
-};
 
 int seleccionada = -1;
 boolean turnoBlancas = true;
@@ -41,12 +23,29 @@ boolean finDePartida = false;
 
 void setup() {
   size(600, 400);
-  for (int i = 0; i < PIEZAS; i++) {
-    int fila = (i < 8) ? 0 : (i < 16) ? 1 : (i < 24) ? 7 : 6;
-    int col = i % 8;
-    PImage img = loadImage(piezasNombres[i]);
-    piezas.add(new Pieza(tipoPiezaArr[i], esBlancaArr[i], fila, col, img));
-  }
+  // Negras mayores
+  piezas.add(new Pieza(0, false, 0, 0, loadImage("piloto.png")));
+  piezas.add(new Pieza(1, false, 0, 1, loadImage("boba.png")));
+  piezas.add(new Pieza(2, false, 0, 2, loadImage("guardia.png")));
+  piezas.add(new Pieza(3, false, 0, 3, loadImage("vader.png")));
+  piezas.add(new Pieza(4, false, 0, 4, loadImage("emperador.png")));
+  piezas.add(new Pieza(2, false, 0, 5, loadImage("guardia.png")));
+  piezas.add(new Pieza(1, false, 0, 6, loadImage("boba.png")));
+  piezas.add(new Pieza(0, false, 0, 7, loadImage("piloto.png")));
+  // Peones negros
+  for (int i = 0; i < 8; i++) piezas.add(new Pieza(8, false, 1, i, loadImage("storm.png")));
+  // Blancas mayores
+  piezas.add(new Pieza(0, true, 7, 0, loadImage("yoda.png")));
+  piezas.add(new Pieza(1, true, 7, 1, loadImage("chew.png")));
+  piezas.add(new Pieza(2, true, 7, 2, loadImage("han.png")));
+  piezas.add(new Pieza(3, true, 7, 3, loadImage("kenobi.png")));
+  piezas.add(new Pieza(4, true, 7, 4, loadImage("luke.png")));
+  piezas.add(new Pieza(2, true, 7, 5, loadImage("han.png")));
+  piezas.add(new Pieza(1, true, 7, 6, loadImage("chew.png")));
+  piezas.add(new Pieza(0, true, 7, 7, loadImage("yoda.png")));
+  // Peones blancos
+  for (int i = 0; i < 8; i++) piezas.add(new Pieza(8, true, 6, i, loadImage("artu.png")));
+
   soundengine = new Minim(this);
   sonido1 = soundengine.loadSample("grito r2.mp3", 1024);
 }
