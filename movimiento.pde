@@ -11,7 +11,7 @@ void calcularCasillasValidas(int idx) {
           break;
         }
       }
-      if (!propia && movimientoValido(idx, f, c)) {
+      if (!propia && p.puedeMoverA(f, c, piezas)) {
         casillasValidas.add(new PVector(c, f));
       }
     }
@@ -36,7 +36,7 @@ boolean moverPieza(int idx, int filaDest, int colDest) {
       break;
     }
   }
-  if (!movimientoValido(idx, filaDest, colDest)) return false;
+  if (!p.puedeMoverA(filaDest, colDest, piezas)) return false;
 
   // Enroque
   if (p.tipo == 4 && abs(colDest - p.col) == 2 && filaDest == p.fila) {
@@ -79,8 +79,7 @@ boolean moverPieza(int idx, int filaDest, int colDest) {
     }
     sonido1.trigger();
   }
-  p.fila = filaDest;
-  p.col = colDest;
+  p.moverA(filaDest, colDest);
 
   // Promoción de peón
   if (p.tipo == 8) {

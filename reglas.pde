@@ -82,7 +82,7 @@ boolean reyEnJaque(boolean blancas) {
   int rf = piezas.get(reyIdx).fila, rc = piezas.get(reyIdx).col;
   for (int i = 0; i < piezas.size(); i++) {
     Pieza p = piezas.get(i);
-    if (p.blanca != blancas && p.estado != 2 && movimientoValido(i, rf, rc)) {
+    if (p.blanca != blancas && p.estado != 2 && p.puedeMoverA(rf, rc, piezas)) {
       return true;
     }
   }
@@ -97,12 +97,30 @@ boolean hayJaqueMate(boolean blancas) {
       int f0 = p.fila, c0 = p.col;
       for (int f = 0; f < N; f++) {
         for (int c = 0; c < N; c++) {
-          if (movimientoValido(i, f, c)) {
+          if (p.puedeMoverA(f, c, piezas)) {
+            // Simular el movimiento
             int oldFila = p.fila, oldCol = p.col;
             int oldEstado = p.estado;
+            int capturada = -1;
+            for (int j = 0; j < piezas.size(); j++) {
+              Pieza otra = piezas.get(j);
+              if (otra.estado != 2 && otra.fila == f && otra.col == c && otra.blanca != p.blanca) {
+                capturada = j;
+                break;
+              }
+            }
+            int oldEstadoCapturada = -1;
+            if (capturada != -1) {
+              oldEstadoCapturada = piezas.get(capturada).estado;
+              piezas.get(capturada).estado = 2;
+            }
             p.fila = f; p.col = c;
             boolean jaque = reyEnJaque(blancas);
+            // Deshacer simulación
             p.fila = oldFila; p.col = oldCol; p.estado = oldEstado;
+            if (capturada != -1) {
+              piezas.get(capturada).estado = oldEstadoCapturada;
+            }
             if (!jaque) return false;
           }
         }
